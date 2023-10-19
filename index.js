@@ -9,11 +9,9 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-
 //DB connection
 
-const uri =
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nlu12w4.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.nlu12w4.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,44 +26,37 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+
     // create DB for product
-    const productCollection = client.db("productStore").collection("products")
-    
+    const productCollection = client.db("productStore").collection("products");
+
     //receive product from client or create new product
-    app.post('/product', async(req,res) => {
-        const newProduct = req.body;
-        console.log(newProduct)
+    app.post("/product", async (req, res) => {
+      const newProduct = req.body;
+      console.log(newProduct);
 
-        // send data to DB
-        const result = await productCollection.insertOne(newProduct)
-        res.send(result)
-    }) 
+      // send data to DB
+      const result = await productCollection.insertOne(newProduct);
+      res.send(result);
+    });
 
-    //now read new product 
-    app.get('/product', async(req,res) => {
-        const cursor = productCollection.find();
-        const result = await cursor.toArray();
-        res.send(result)
-    })
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    //now read new product
+    app.get("/product", async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get data read in brand name
+    app.get("/product/:brand", async (req, res) => {
+      const brand = req.params.brand;
+      const query = {brand : (brand)}
+      const result = await productCollection.find(query);
+      const resultArray = await result.toArray();
+      console.log(resultArray)
+      res.send(resultArray)
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
