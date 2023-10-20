@@ -29,6 +29,10 @@ async function run() {
 
     // create DB for product
     const productCollection = client.db("productStore").collection("products");
+    // create DB for cart product
+    const cartCollection = client
+      .db("productStore")
+      .collection("cartCollection");
 
     //receive product from client or create new product
     app.post("/product", async (req, res) => {
@@ -63,6 +67,16 @@ async function run() {
       res.send(result);
     });
 
+    //receive cart product from client
+    app.post("/cart", async (req, res) => {
+      const cartNewProduct = req.body;
+      console.log(cartNewProduct);
+
+      // send data to DB
+      const result = await cartCollection.insertOne(cartNewProduct);
+      res.send(result);
+    });
+   
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
