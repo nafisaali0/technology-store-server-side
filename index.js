@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -47,14 +47,20 @@ async function run() {
       res.send(result);
     });
 
-    // get data read in brand name
+    // get data read by id
+    app.get("/product/id/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productCollection.findOne(query);
+      res.send(result);
+    });
+
+    // get data read by brand name
     app.get("/product/:brand", async (req, res) => {
       const brand = req.params.brand;
-      const query = {brand : (brand)}
-      const result = await productCollection.find(query);
-      const resultArray = await result.toArray();
-      console.log(resultArray)
-      res.send(resultArray)
+      const query = { brand: brand };
+      const result = await productCollection.find(query).toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
