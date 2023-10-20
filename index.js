@@ -66,7 +66,8 @@ async function run() {
       const result = await productCollection.find(query).toArray();
       res.send(result);
     });
-
+    
+    //  card DB
     //receive cart product from client
     app.post("/cart", async (req, res) => {
       const cartNewProduct = req.body;
@@ -76,7 +77,12 @@ async function run() {
       const result = await cartCollection.insertOne(cartNewProduct);
       res.send(result);
     });
-   
+    //now read cart product
+    app.get("/cart", async (req, res) => {
+      const cursor = cartCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
